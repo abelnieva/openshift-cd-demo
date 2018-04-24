@@ -25,7 +25,7 @@ parameters:
   required: true
 - displayName: Ephemeral
   description: Use no persistent storage for Gogs and Nexus
-  value: "true"
+  value: "false"
   name: EPHEMERAL
   required: true
 - description: Webhook secret
@@ -292,7 +292,7 @@ objects:
                   --param=HOSTNAME=$GOGS_HOSTNAME \
                   --param=SKIP_TLS_VERIFY=true
             else
-              oc new-app -f https://raw.githubusercontent.com/OpenShiftDemos/gogs-openshift-docker/master/openshift/gogs-persistent-template.yaml \
+              oc new-app -f scripts/gogs-persistent-template.yaml \
                   --param=GOGS_VERSION=0.11.34 \
                   --param=HOSTNAME=$GOGS_HOSTNAME \
                   --param=SKIP_TLS_VERIFY=true
@@ -300,7 +300,7 @@ objects:
             
             sleep 5
 
-            oc new-app -f http://bit.ly/openshift-sonarqube-embedded-template --param=SONARQUBE_VERSION=7.0 --param=SONAR_MAX_MEMORY=4Gi
+            oc new-app -f scripts/openshift-sonarqube-embedded-template.yaml--param=SONARQUBE_VERSION=7.0 --param=SONAR_MAX_MEMORY=4Gi
 
             if [ "${WITH_CHE}" == "true" ] ; then
               oc process -f https://raw.githubusercontent.com/minishift/minishift-addons/master/add-ons/che/templates/che-single-user.yml \
@@ -315,7 +315,7 @@ objects:
             if [ "${EPHEMERAL}" == "true" ] ; then
               oc new-app -f https://raw.githubusercontent.com/OpenShiftDemos/nexus/master/nexus3-template.yaml --param=NEXUS_VERSION=3.7.1 --param=MAX_MEMORY=2Gi
             else
-              oc new-app -f https://raw.githubusercontent.com/OpenShiftDemos/nexus/master/nexus3-persistent-template.yaml --param=NEXUS_VERSION=3.8.0 --param=MAX_MEMORY=2Gi
+              oc new-app -f scripts/nexus3-persistent-template.yaml --param=NEXUS_VERSION=3.8.0 --param=MAX_MEMORY=2Gi
             fi
 
             GOGS_SVC=$(oc get svc gogs -o template --template='{{.spec.clusterIP}}')
